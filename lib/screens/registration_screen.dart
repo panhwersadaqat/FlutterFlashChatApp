@@ -19,9 +19,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Container(
+            Hero(tag: 'logo', child:  Container(
               height: 200.0,
               child: Image.asset('images/logo.png'),
+            ),
             ),
             const SizedBox(
               height: 48.0,
@@ -32,6 +33,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               },
               decoration: const InputDecoration(
                 hintText: 'Enter your email',
+                hintStyle: TextStyle(color: Colors.grey),
                 contentPadding:
                     EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
                 border: OutlineInputBorder(
@@ -56,6 +58,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               },
               decoration: const InputDecoration(
                 hintText: 'Enter your password',
+                hintStyle: TextStyle(color: Colors.grey),
                 contentPadding:
                     EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
                 border: OutlineInputBorder(
