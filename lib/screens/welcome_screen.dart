@@ -43,7 +43,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     TypewriterAnimatedText(
                       'Flash Chat',
                       textStyle: const TextStyle(
-                        fontSize: 45.0,
+                        fontSize: 40.0,
                         fontWeight: FontWeight.w900,
                           color: Colors.black
                       ),
