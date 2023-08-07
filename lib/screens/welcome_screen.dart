@@ -47,7 +47,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   pause: const Duration(milliseconds: 200),
                   displayFullTextOnTap: true,
                   stopPauseOnTap: true,
-                )
+                ),
               ],
             ),
             const SizedBox(
@@ -59,6 +59,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               onPressed: (){
                 Navigator.pushNamed(context, LoginScreen.id);
               },
+            ),
+            RoundedButton(
+                title: 'Register',
+                color: Colors.blueAccent,
+                onPressed: () {
+                  Navigator.pushNamed(context, RegistrationScreen.id);
+                },
             ),
       RoundedButton(
         title: 'Register',
