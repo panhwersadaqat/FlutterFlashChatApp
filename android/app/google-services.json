@@ -31,10 +31,10 @@
               "client_type": 3
             },
             {
-              "client_id": "1058854693075-j6eg8fji1q0irncp1oade6iop3la7s5t.apps.googleusercontent.com",
+              "client_id": "1058854693075-56soh38p0gu99v2b8t7c45cnv6ghb5as.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.testing.flashchat.RunnerTests"
+                "bundle_id": "com.testing.flashchat"
               }
             }
           ]

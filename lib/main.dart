@@ -4,10 +4,12 @@ import 'package:flashchat/screens/login_screen.dart';
 import 'package:flashchat/screens/registration_screen.dart';
 import 'package:flashchat/screens/chat_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-   Firebase.initializeApp();
+   Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(FlashChat());
 }
 
