@@ -36,7 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildOverlay() {
     if (_isLoggingIn) {
-      return Center(
+      return const Center(
         child: ColorfulCircularProgressIndicator(
           colors: [Colors.blue, Colors.red, Colors.amber, Colors.green],
           strokeWidth: 5,
