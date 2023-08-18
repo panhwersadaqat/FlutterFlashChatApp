@@ -34,6 +34,14 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  void getMessage() async {
+    final QuerySnapshot<Map<String, dynamic>> messagesSnapshot = await FirebaseFirestore.instance.collection('Messages').get();
+
+    for (var msg in messagesSnapshot.docs) {
+      print(msg.data());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,7 +78,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      _firestore.collection('message').add({
+                      _firestore.collection('Messages').add({
                         'text': messageText,
                         'sender':loggedInUser.email
                       });
