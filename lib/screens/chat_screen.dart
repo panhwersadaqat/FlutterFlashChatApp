@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 final _firestore = FirebaseFirestore.instance;
+late User loggedInUser;
 
 class ChatScreen extends StatefulWidget {
   static const String id = "chat_screen";
@@ -14,7 +15,6 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final messageTextController = TextEditingController();
   final _auth = FirebaseAuth.instance;
-  late User loggedInUser;
   late String messageText;
 
   @override
@@ -31,16 +31,6 @@ class _ChatScreenState extends State<ChatScreen> {
       }
     } catch (e) {
       print(e);
-    }
-  }
-
-  void getMessage() async {
-    final QuerySnapshot<
-        Map<String, dynamic>> messagesSnapshot = await FirebaseFirestore
-        .instance.collection('Messages').get();
-
-    for (var msg in messagesSnapshot.docs) {
-      print(msg.data());
     }
   }
 
@@ -88,7 +78,8 @@ class _ChatScreenState extends State<ChatScreen> {
                       messageTextController.clear();
                       _firestore.collection('Messages').add({
                         'text': messageText,
-                        'sender': loggedInUser.email
+                        'sender': loggedInUser.email,
+                        'timestamp': FieldValue.serverTimestamp(),
                       });
                     },
                     child: const Text(
@@ -107,41 +98,48 @@ class _ChatScreenState extends State<ChatScreen> {
 }
 
 class MessagesSteam extends StatelessWidget {
-  const MessagesSteam({super.key});
-
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: _firestore.collection('Messages').snapshots(),
+      stream: _firestore.collection('Messages').orderBy('timestamp').snapshots(),
       builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final messages = snapshot.data!.docs;
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Container(
+            alignment: Alignment.center,
+            child: const Padding(
+              padding: EdgeInsets.only(top: 20.0), // Adjust the top margin as needed
+              child: CircularProgressIndicator(),
+            ),
+          );
+        } else if (snapshot.hasData) {
+          final messages = snapshot.data!.docs.reversed;
           List<MessageBubble> messageBubbles = [];
           for (var message in messages) {
-            final messageData = message.data() as Map<String, dynamic>; // Explicit cast
-            if (messageData != null) {
-              final messageText = messageData['text'];
-              final messageSender = messageData['sender'];
-              final messageBubble = MessageBubble(
-                  sender: messageSender,
-                  text: messageText
-              );
-              messageBubbles.add(messageBubble);
-            }
+            final messageData = message.data() as Map<String, dynamic>;
+            final messageText = messageData['text'];
+            final messageSender = messageData['sender'];
+            final currentUser = loggedInUser.email;
+            final messageBubble = MessageBubble(
+              sender: messageSender,
+              text: messageText,
+              isMe: currentUser == messageSender,
+            );
+            messageBubbles.add(messageBubble);
           }
           return Expanded(
             child: ListView(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 10.0, vertical: 20.0),
+              reverse: true,
+              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
               children: messageBubbles,
             ),
           );
         } else if (snapshot.hasError) {
-          // Handle the error case here
           return Text('Error: ${snapshot.error}');
         } else {
-          // If snapshot doesn't have data yet, you can return a loading indicator or an empty widget
-          return CircularProgressIndicator(); // or return an empty Container()
+          return Align(
+            alignment: Alignment.center,
+            child: CircularProgressIndicator(),
+          );
         }
       },
     );
@@ -149,18 +147,21 @@ class MessagesSteam extends StatelessWidget {
 }
 
 
+
 class MessageBubble extends StatelessWidget {
-   MessageBubble({required this.sender, required this.text});
+   MessageBubble({required this.sender, required this.text, required this.isMe});
 
   final String sender;
   final String text;
+  final bool isMe;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment:
+        isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children:<Widget> [
           Text(
               sender,
@@ -170,13 +171,23 @@ class MessageBubble extends StatelessWidget {
           ),
           ),
           Material(
-            borderRadius: BorderRadius.circular(30.0),
-            color: Colors.lightBlue,
+            borderRadius: isMe? const BorderRadius.only(
+                topLeft: Radius.circular(30),
+                bottomLeft: Radius.circular(30),
+                bottomRight: Radius.circular(30),
+            ) : const BorderRadius.only(
+              bottomLeft: Radius.circular(30),
+              bottomRight: Radius.circular(30),
+              topRight: Radius.circular(30),
+            ) ,
+            elevation: 5.0,
+            color: isMe?  Colors.lightBlue : Colors.white,
             child : Padding(
               padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
               child: Text(
                 text,
-              style: const TextStyle(
+              style: TextStyle(
+                color: isMe? Colors.white : Colors.black54,
                 fontSize: 15.0
               ),
           ),
